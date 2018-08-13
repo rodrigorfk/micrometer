@@ -23,7 +23,6 @@ import io.micrometer.spring.PropertiesMeterFilter;
 import io.micrometer.spring.autoconfigure.jersey2.server.JerseyServerMetricsConfiguration;
 import io.micrometer.spring.autoconfigure.web.servlet.ServletMetricsConfiguration;
 import io.micrometer.spring.autoconfigure.web.tomcat.TomcatMetricsConfiguration;
-import io.micrometer.spring.integration.SpringIntegrationMetrics;
 import io.micrometer.spring.scheduling.ScheduledMethodMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -33,7 +32,6 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -41,8 +39,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.integration.config.EnableIntegrationManagement;
-import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
 /**
  * {@link EnableAutoConfiguration} for Micrometer-based metrics.
@@ -99,26 +95,4 @@ public class MetricsAutoConfiguration {
         return new HystrixMetricsBinder();
     }
 
-    /**
-     * Replaced by built-in Micrometer integration starting in Spring Integration 5.0.2.
-     */
-    @Configuration
-    @ConditionalOnClass(EnableIntegrationManagement.class)
-    static class MetricsIntegrationConfiguration {
-
-        @Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
-        @ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
-        public IntegrationManagementConfigurer integrationManagementConfigurer() {
-            IntegrationManagementConfigurer configurer = new IntegrationManagementConfigurer();
-            configurer.setDefaultCountsEnabled(true);
-            configurer.setDefaultStatsEnabled(true);
-            return configurer;
-        }
-
-        @Bean
-        public SpringIntegrationMetrics springIntegrationMetrics(
-                IntegrationManagementConfigurer configurer) {
-            return new SpringIntegrationMetrics(configurer);
-        }
-    }
 }

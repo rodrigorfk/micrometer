@@ -27,6 +27,7 @@ allprojects {
         println "I'm building $project.name with version $project.version"
     }
     group = 'io.micrometer'
+    version '1.0.6'
 }
 
 subprojects {
